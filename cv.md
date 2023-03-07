@@ -19,4 +19,55 @@ I’m a 10 years experienced Full-Stack Web Developer mostly specializing in bac
 
 **Additional:** Git, SOLID, OOP, FP, API & Architecture, Jira. My server side background is PHP, Laravel, MySQL.
 
+***
+
+### Sample code:
+
+```js
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
+const routeCampsitesData = {
+  route: routeId,
+  campsites: campsites,
+};
+axios.post(BASE_URL + '/api/route/update_route_campsites', routeCampsitesData, ApiHelper.getRequestConfig(authToken))
+  .then(res => {
+    if (res.data.success) {
+      dispatch(updateRoute(res.data.routeData));
+
+      const points = RouteHelper.getPoints(res.data.routeData.campsites)
+      mapRef.current.findRoute(points, ['car'], (event) => {
+        let routePathData = {
+          route: routeId,
+          distance: event.route.distance,
+          time: event.route.time,
+          path: mapRoute.sections,
+        };
+        axios.post(BASE_URL + '/api/route/add_path_to_route', routePathData, ApiHelper.getRequestConfig(authToken))
+          .then(res => {
+            if (res.data.routeData) {
+              dispatch(updateRoute(res.data.routeData));
+            }
+          })
+      });
+
+      Toast.show({
+        type: 'success',
+        text1: res.data.text,
+      });
+
+    }
+  })
+  .catch((error) => {
+
+    if (error.response) {
+      Toast.show({
+        type: 'success',
+        text: error.response.data.text,
+      });
+    }
+
+  })
+
+```
 
